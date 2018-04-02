@@ -30,6 +30,7 @@ id: 4
 
 app.use(bodyParser.json())
 app.use(cors())
+app.use(express.static('build'))
 
 
 //Morganin apufunktio joka ottaa kopin välitetystä data-bodystä ja tekee siitä stringin
@@ -50,7 +51,7 @@ const generateId = () => {
 }
 
 //Tekee uuden henkilön
-app.post('/persons', (request, response) => {
+app.post('/api/persons', (request, response) => {
   const body = request.body
 
   if (body.name === undefined || body.number === undefined) {
@@ -74,12 +75,12 @@ app.post('/persons', (request, response) => {
 })
 
 //Hakee kaikki henkilöt
-app.get('/persons', (request, response) => {
+app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
 
 //Hakee henkilön ID perusteella
-app.get('/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   const person = persons.find(person => person.id === id)
   if ( person ) {
@@ -90,7 +91,7 @@ app.get('/persons/:id', (request, response) => {
 })
 
 //Tuhoaa henkilön
-app.delete('/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   persons = persons.filter(note => note.id !== id)
   response.status(204).end()
