@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
+const cors = require('cors')
+
 
 let persons = [
 {
@@ -27,6 +29,8 @@ id: 4
 ]
 
 app.use(bodyParser.json())
+app.use(cors())
+
 
 //Morganin apufunktio joka ottaa kopin välitetystä data-bodystä ja tekee siitä stringin
 morgan.token('body', function getId (req) {	
