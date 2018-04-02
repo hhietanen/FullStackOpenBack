@@ -28,16 +28,17 @@ id: 4
 
 app.use(bodyParser.json())
 
+//Morganin apufunktio joka ottaa kopin välitetystä data-bodystä ja tekee siitä stringin
 morgan.token('body', function getId (req) {	
-	let stringeri = JSON.stringify(req.body)
-  return stringeri
+	let palaute = JSON.stringify(req.body)
+  return palaute
 })
 
 //tehtävä 3.7
 //app.use(morgan('tiny'))
 app.use(morgan(':method :url :body :status :res[content-length] - :response-time ms'))
 
-//Generoi henkilölle random ID:n välillä 0-9999
+//Apufunktio joka generoi numeron välillä 0-9999
 const generateId = () => {
   const Id = Math.random()*10000
   let Idx = Math.floor(Id)
@@ -68,10 +69,12 @@ app.post('/persons', (request, response) => {
   response.json(person)
 })
 
+//Hakee kaikki henkilöt
 app.get('/persons', (request, response) => {
   response.json(persons)
 })
 
+//Hakee henkilön ID perusteella
 app.get('/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   const person = persons.find(person => person.id === id)
@@ -82,19 +85,21 @@ app.get('/persons/:id', (request, response) => {
   }
 })
 
+//Tuhoaa henkilön
 app.delete('/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   persons = persons.filter(note => note.id !== id)
   response.status(204).end()
 })
 
+//Näyttää info-sivulla yhteenvedon henkilöiden määrästä
 app.get('/info', (request, response) => {
 response.end(
 	`<div>Puhelinluettelossa on ${persons.length} henkilön tiedot</div>` +
 	`<div>${new Date()}</div>`)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
