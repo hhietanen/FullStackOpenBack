@@ -1,0 +1,31 @@
+{
+  "name": "phonebackend",
+  "version": "1.0.0",
+  "description": "Backend for the phonebook",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "watch": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hhietanen/FullStackOpenBack.git"
+  },
+  "author": "Herkko Hietanen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hhietanen/FullStackOpenBack/issues"
+  },
+  "homepage": "https://github.com/hhietanen/FullStackOpenBack#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "morgan": "^1.9.0",
+    "npm": "^5.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.3"
+  }
+}
