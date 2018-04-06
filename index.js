@@ -29,15 +29,6 @@ const generateId = () => {
   return Idx
 }
 
-// const formatPerson = (person) => {
-//   return {
-//     name: person.name,
-//     number: person.number,
-//     id: person._id
-//   }
-// }
-
-
 
 //Hakee kaikki henkilöt
 app.get('/api/people', (request, response) => {
@@ -104,6 +95,26 @@ app.post('/api/people', (request, response) => {
 
 
 
+//Hakee henkilön ID perusteella ja korvaa numeron
+app.put('/api/people/:id', (request, response) => {
+  const body = request.body
+
+  const person = {
+    name: body.name,
+    number: body.number
+  }
+
+  Person
+    .findByIdAndUpdate(request.params.id, person, { new: true } )
+    .then(updatedPerson => {
+      response.json(Person.format(updatedPerson))
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(400).send({ error: 'malformatted id' })
+    } )
+} )
+
 //Hakee henkilön ID perusteella
 app.get('/api/people/:id', (request, response) => {
   //Tämä oli käytössä ennen tehtävää 3:13
@@ -145,23 +156,22 @@ app.delete('/api/people/:id', (request, response) => {
 //Laskee dokumenttien määrän
 let numberofDocs
 //Setter
-const setNumberofDocuments = function(err, count){ 
-        if(err) return handleError(err)
-        numberofDocs = count
-
-      };
+const setNumberofDocuments = function(err, count) {
+  if(err) return err
+  numberofDocs = count
+}
 //asettaa alkutilan
 Person.count({}, setNumberofDocuments)
 
 //Getter
 function getNumberofDocs(){
-  return numberofDocs;
+  return numberofDocs
 }
 
 
 //Näyttää info-sivulla yhteenvedon henkilöiden määrästä
 app.get('/info', (request, response) => {
-  let number = getNumberofDocs();
+  let number = getNumberofDocs()
   response.end(
     `<div>Puhelinluettelossa on ${number} henkil&ouml;n tiedot</div>` +
     `<div>${new Date()}</div>`)
