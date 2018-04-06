@@ -4,29 +4,8 @@ const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
 
+const Person = require('./models/person')
 
-let persons = [
-{
-name: "Arto Hellas",
-number: "040-123456",
-id: 1
-},
-{
-name: "Martti Tienari",
-number: "040-123456666",
-id: 2
-},
-{
-name: "Arto Järvinen",
-number: "040-1234567778888",
-id: 3
-},
-{
-name: "Lea Kutvonen",
-number: "040-123456",
-id: 4
-}
-]
 
 app.use(bodyParser.json())
 app.use(cors())
@@ -50,58 +29,124 @@ const generateId = () => {
   return Idx 
 }
 
+// const formatPerson = (person) => {
+//   return {
+//     name: person.name,
+//     number: person.number,
+//     id: person._id
+//   }
+// }
+
+
+
+//Hakee kaikki henkilöt
+app.get('/api/people', (request, response) => {
+  Person
+    .find({})
+    .then(people => {
+      response.json(people.map(Person.format))
+    })
+    .catch(error => {
+      console.log(error)
+    })
+})
+
+
 //Tekee uuden henkilön
-app.post('/api/persons', (request, response) => {
+app.post('/api/people', (request, response) => {
   const body = request.body
+  console.log(body)
 
   if (body.name === undefined || body.number === undefined) {
     return response.status(400).json({error: 'information missing'})
   }
 
-
-  if (persons.find(person => person.name === body.name)) {
-    return response.status(400).json({error: 'Double content'})
+  const persona = {
+    name: body.name,
+    number: body.number
   }
 
-  const person = {
+
+  Person
+    .find({name: body.name})
+    .then(person => {      
+      let duplicate = Person.format(person[0])
+      return duplicate.id
+    })
+    .then(id => {
+      //console.log(id)
+    return Person.findByIdAndUpdate(id, persona, { new: true } )
+    })
+    .then(updatedPerson => {
+      response.json(Person.format(updatedPerson))
+    })
+    .catch(error => {
+
+  const person = new Person({
     name: body.name,
     number: body.number,
     date: new Date(),
     id: generateId()
-  }
+  })
 
-  persons = persons.concat(person)
-  response.json(person)
+  person
+    .save()
+    .then(savedPerson => {
+      response.json(Person.format(savedPerson))
+    })
+    .catch(error => {
+      console.log(error)
+    })    
+  })    
 })
 
-//Hakee kaikki henkilöt
-app.get('/api/persons', (request, response) => {
-  response.json(persons)
-})
+
+
+
 
 //Hakee henkilön ID perusteella
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find(person => person.id === id)
-  if ( person ) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+app.get('/api/people/:id', (request, response) => {
+  //Tämä oli käytössä ennen tehtävää 3:13
+  // const id = Number(request.params.id)
+  // const person = Person.find(person => person.id === id)
+  // if ( person ) {
+  //   response.json(person)
+  // } else {
+  //   response.status(404).end()
+  // }
+
+  Person
+    .findById(request.params.id)
+    .then(person => {
+      response.json(Person.format(person))
+    })
+   .catch(error => {
+      console.log(error)
+    })
 })
+
+
 
 //Tuhoaa henkilön
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(note => note.id !== id)
-  response.status(204).end()
+app.delete('/api/people/:id', (request, response) => {
+  Person
+    .findByIdAndRemove(request.params.id)
+    .then(person => {
+      console.log('Deleted', person)
+      response.status(204).end()
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(400).send({ error: 'malformatted id' })
+    })
 })
 
+    
 //Näyttää info-sivulla yhteenvedon henkilöiden määrästä
 app.get('/info', (request, response) => {
-response.end(
-	`<div>Puhelinluettelossa on ${persons.length} henkilön tiedot</div>` +
-	`<div>${new Date()}</div>`)
+  response.end(
+  	`<div>Puhelinluettelossa on ${Person.length} henkil&ouml;n tiedot</div>` +
+  	`<div>${new Date()}</div>`)
 })
 
 const PORT = process.env.PORT || 3001
