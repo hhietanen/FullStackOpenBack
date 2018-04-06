@@ -9,10 +9,10 @@ const url = process.env.MONGODB_URI
 
 mongoose.connect(url)
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 const peopleSchema = new Schema({
-	name: String,
-  	number: String	
+  name: String,
+  number: String
 })
 
 peopleSchema.statics.format = function(person, cb){

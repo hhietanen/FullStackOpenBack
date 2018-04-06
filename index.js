@@ -133,6 +133,7 @@ app.delete('/api/people/:id', (request, response) => {
     .findByIdAndRemove(request.params.id)
     .then(person => {
       console.log('Deleted', person)
+      Person.count({}, setNumberofDocuments)
       response.status(204).end()
     })
     .catch(error => {
@@ -141,10 +142,28 @@ app.delete('/api/people/:id', (request, response) => {
     })
 })
 
+//Laskee dokumenttien määrän
+let numberofDocs
+//Setter
+const setNumberofDocuments = function(err, count){ 
+        if(err) return handleError(err)
+        numberofDocs = count
+
+      };
+//asettaa alkutilan
+Person.count({}, setNumberofDocuments)
+
+//Getter
+function getNumberofDocs(){
+  return numberofDocs;
+}
+
+
 //Näyttää info-sivulla yhteenvedon henkilöiden määrästä
 app.get('/info', (request, response) => {
+  let number = getNumberofDocs();
   response.end(
-    `<div>Puhelinluettelossa on ${Person.length} henkil&ouml;n tiedot</div>` +
+    `<div>Puhelinluettelossa on ${number} henkil&ouml;n tiedot</div>` +
     `<div>${new Date()}</div>`)
 })
 
