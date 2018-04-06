@@ -13,8 +13,8 @@ app.use(express.static('build'))
 
 
 //Morganin apufunktio joka ottaa kopin välitetystä data-bodystä ja tekee siitä stringin
-morgan.token('body', function getId (req) {	
-	let palaute = JSON.stringify(req.body)
+morgan.token('body', function getId (req) {
+  let palaute = JSON.stringify(req.body)
   return palaute
 })
 
@@ -26,7 +26,7 @@ app.use(morgan(':method :url :body :status :res[content-length] - :response-time
 const generateId = () => {
   const Id = Math.random()*10000
   let Idx = Math.floor(Id)
-  return Idx 
+  return Idx
 }
 
 // const formatPerson = (person) => {
@@ -58,7 +58,7 @@ app.post('/api/people', (request, response) => {
   console.log(body)
 
   if (body.name === undefined || body.number === undefined) {
-    return response.status(400).json({error: 'information missing'})
+    return response.status(400).json({ error: 'information missing' })
   }
 
   const persona = {
@@ -68,36 +68,36 @@ app.post('/api/people', (request, response) => {
 
 
   Person
-    .find({name: body.name})
-    .then(person => {      
+    .find({ name: body.name })
+    .then(person => {
       let duplicate = Person.format(person[0])
       return duplicate.id
     })
     .then(id => {
       //console.log(id)
-    return Person.findByIdAndUpdate(id, persona, { new: true } )
+      return Person.findByIdAndUpdate(id, persona, { new: true } )
     })
     .then(updatedPerson => {
       response.json(Person.format(updatedPerson))
     })
     .catch(error => {
 
-  const person = new Person({
-    name: body.name,
-    number: body.number,
-    date: new Date(),
-    id: generateId()
-  })
+      const person = new Person({
+        name: body.name,
+        number: body.number,
+        date: new Date(),
+        id: generateId()
+      })
 
-  person
-    .save()
-    .then(savedPerson => {
-      response.json(Person.format(savedPerson))
+      person
+        .save()
+        .then(savedPerson => {
+          response.json(Person.format(savedPerson))
+        })
+        .catch(error => {
+          console.log(error)
+        })
     })
-    .catch(error => {
-      console.log(error)
-    })    
-  })    
 })
 
 
@@ -120,7 +120,7 @@ app.get('/api/people/:id', (request, response) => {
     .then(person => {
       response.json(Person.format(person))
     })
-   .catch(error => {
+    .catch(error => {
       console.log(error)
     })
 })
@@ -141,12 +141,11 @@ app.delete('/api/people/:id', (request, response) => {
     })
 })
 
-    
 //Näyttää info-sivulla yhteenvedon henkilöiden määrästä
 app.get('/info', (request, response) => {
   response.end(
-  	`<div>Puhelinluettelossa on ${Person.length} henkil&ouml;n tiedot</div>` +
-  	`<div>${new Date()}</div>`)
+    `<div>Puhelinluettelossa on ${Person.length} henkil&ouml;n tiedot</div>` +
+    `<div>${new Date()}</div>`)
 })
 
 const PORT = process.env.PORT || 3001

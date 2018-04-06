@@ -1,5 +1,9 @@
 const mongoose = require('mongoose')
 
+if ( process.env.NODE_ENV !== 'production' ) {
+  require('dotenv').config()
+}
+
 // korvaa url oman tietokantasi urlilla. ethän laita salasanaa Githubiin!
 const url = process.env.MONGODB_URI
 
